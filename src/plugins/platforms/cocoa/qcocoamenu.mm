@@ -474,9 +474,11 @@ void QCocoaMenu::syncMenuItem_helper(QPlatformMenuItem *menuItem, bool menubarUp
     // synced item, but only on the condition we're all currently hooked to the
     // menunbar. A good indicator of this being the right moment is knowing that
     // we got called from QCocoaMenuBar::updateMenuBarImmediately().
-    if (menubarUpdate)
+    if (menubarUpdate || (cocoaItem->isVisible() && cocoaItem->menu()))
+    {
         if (QCocoaMenu *submenu = cocoaItem->menu())
             submenu->setAttachedItem(syncedItem);
+    }
 }
 
 void QCocoaMenu::syncSeparatorsCollapsible(bool enable)
