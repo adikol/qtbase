@@ -469,11 +469,15 @@ QByteArray QAuthenticatorPrivate::calculateResponse(const QByteArray &requestMet
         phase = Done;
         break;
     case QAuthenticatorPrivate::Basic:
+    {
         methodString = "Basic ";
-        response = user.toLatin1() + ':' + password.toLatin1();
+        const QHash<QByteArray, QByteArray> options = parseDigestAuthenticationChallenge(challenge);
+        const bool useUtf8 = QString::fromLatin1(options.value("charset")).compare(QLatin1String("utf-8"), Qt::CaseInsensitive) == 0;
+        response = (useUtf8 ? user.toUtf8() : user.toLatin1()) + ':' + (useUtf8 ? password.toUtf8() : password.toLatin1());
         response = response.toBase64();
         phase = Done;
         break;
+    }
     case QAuthenticatorPrivate::Login:
         if (challenge.contains("VXNlciBOYW1lAA==")) {
             response = user.toUtf8().toBase64();
